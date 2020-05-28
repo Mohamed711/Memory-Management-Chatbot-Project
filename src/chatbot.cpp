@@ -42,11 +42,77 @@ ChatBot::~ChatBot()
     }
 }
 
-//// STUDENT CODE
-////
+ChatBot::ChatBot(const ChatBot & source)
+{
+    std::cout << "Copy constructor" << std::endl;
 
-////
-//// EOF STUDENT CODE
+    // copy the unowned pointer values
+    _currentNode = source._currentNode;
+    _rootNode = source._rootNode;
+    _chatLogic = source._chatLogic;
+
+    // deep copy for the owned member
+    _image = new wxBitmap();
+    *_image = *source._image;
+}
+
+ChatBot::ChatBot(ChatBot && source)
+{
+    std::cout << "Move constructor" << std::endl;
+
+    _currentNode = source._currentNode;
+    _rootNode = source._rootNode;
+    _chatLogic = source._chatLogic;
+    _image = source._image;
+
+    // Invalidate the source
+    source._image = NULL;
+    source._currentNode = nullptr;
+    source._rootNode = nullptr;
+    source._chatLogic = nullptr;
+}
+
+ChatBot& ChatBot::operator=(const ChatBot & source)
+{
+    std::cout << "Copy Assignment operator" << std::endl;
+
+    if (this == &source)
+        return *this;
+
+    // copy the unowned pointer values
+    _currentNode = source._currentNode;
+    _rootNode = source._rootNode;
+    _chatLogic = source._chatLogic;
+
+    // deep copy for the owned member
+    _image = new wxBitmap();
+    *_image = *source._image;
+
+    return *this;
+}
+
+ChatBot& ChatBot::operator=(ChatBot && source)
+{
+    std::cout << "Move Assignment operator" << std::endl;
+
+    if (&source == this)
+    {
+        return *this;
+    }
+
+    _currentNode = source._currentNode;
+    _rootNode = source._rootNode;
+    _chatLogic = source._chatLogic;
+    _image = source._image;
+
+    // Invalidate the source
+    source._image = NULL;
+    source._currentNode = nullptr;
+    source._rootNode = nullptr;
+    source._chatLogic = nullptr;
+  
+    return *this;
+}
 
 void ChatBot::ReceiveMessageFromUser(std::string message)
 {
@@ -94,6 +160,7 @@ void ChatBot::SetCurrentNode(GraphNode *node)
     std::string answer = answers.at(dis(generator));
 
     // send selected node answer to user
+    _chatLogic->SetChatbotHandle(this);
     _chatLogic->SendMessageToUser(answer);
 }
 
